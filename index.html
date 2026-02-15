@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מעקב התנהגות בגן</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #2C5F2D;
+            --primary-light: #97BC62;
+            --accent: #F9E795;
+            --success: #4CAF50;
+            --warning: #FFA726;
+            --danger: #EF5350;
+            --bg: #F5F7F5;
+            --card-bg: #FFFFFF;
+            --text: #1E2761;
+            --text-light: #666666;
+            --border: #E0E0E0;
+            --shadow: rgba(0, 0, 0, 0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #E8F5E9 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px var(--shadow);
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, #1E4620 100%);
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px var(--shadow);
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            font-size: 1.1em;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Heebo', sans-serif;
+        }
+        
+        .tab:hover {
+            background: var(--bg);
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(44, 95, 45, 0.3);
+        }
+        
+        .view {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .view.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px var(--shadow);
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 1.05em;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: 'Heebo', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 95, 45, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Heebo', sans-serif;
+            margin-left: 10px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.9em;
+            margin: 0;
+        }
+        
+        .behavior-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .behavior-btn {
+            padding: 18px;
+            border: 2px solid;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'Heebo', sans-serif;
+            position: relative;
+        }
+        
+        .behavior-btn:hover .behavior-tooltip {
+            display: block;
+        }
+        
+        .behavior-tooltip {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            white-space: normal;
+            max-width: 250px;
+            margin-bottom: 10px;
+            z-index: 1000;
+            text-align: right;
+            font-weight: 400;
+        }
+        
+        .behavior-btn.positive {
+            border-color: var(--success);
+            color: var(--success);
+        }
+        
+        .behavior-btn.positive.selected {
+            background: var(--success);
+            color: white;
+        }
+        
+        .behavior-btn.challenging {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+        
+        .behavior-btn.challenging.selected {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .children-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .child-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .child-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px var(--shadow);
+        }
+        
+        .child-name {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .child-age {
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg);
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat.positive .stat-value {
+            color: var(--success);
+        }
+        
+        .stat.challenging .stat-value {
+            color: var(--warning);
+        }
+        
+        .history-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border-right: 4px solid;
+            margin-bottom: 15px;
+        }
+        
+        .history-item.positive {
+            border-color: var(--success);
+        }
+        
+        .history-item.challenging {
+            border-color: var(--warning);
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .history-behavior {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        
+        .type-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .type-btn {
+            flex: 1;
+            padding: 20px;
+            border: 3px solid;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            font-family: 'Heebo', sans-serif;
+        }
+        
+        .type-btn.positive {
+            border-color: var(--success);
+            color: var(--success);
+        }
+        
+        .type-btn.positive.selected {
+            background: var(--success);
+            color: white;
+        }
+        
+        .type-btn.challenging {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+        
+        .type-btn.challenging.selected {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .behavior-list-item {
+            background: var(--bg);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-right: 4px solid;
+        }
+        
+        .behavior-list-item.positive {
+            border-color: var(--success);
+        }
+        
+        .behavior-list-item.challenging {
+            border-color: var(--warning);
+        }
+        
+        .behavior-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .behavior-name {
+            font-size: 1.15em;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .behavior-description {
+            color: var(--text-light);
+            font-size: 0.95em;
+            line-height: 1.5;
+            margin-top: 8px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+        }
+        
+        .add-behavior-section {
+            background: #F0F7F0;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .add-behavior-section.challenging-section {
+            background: #FFF8F0;
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        h3 {
+            color: var(--primary);
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                min-width: auto;
+            }
+            
+            .behavior-tooltip {
+                position: static;
+                transform: none;
+                display: block;
+                margin-top: 10px;
+                background: rgba(0,0,0,0.8);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌱 מעקב התנהגות בגן</h1>
+            <div class="subtitle">מערכת דיגיטלית לתיעוד ומעקב אחר התנהגויות ילדים</div>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showView('children')">👶 ילדים</button>
+            <button class="tab" onclick="showView('track')">📝 תיעוד</button>
+            <button class="tab" onclick="showView('history')">📊 היסטוריה</button>
+            <button class="tab" onclick="showView('add')">➕ הוספה</button>
+            <button class="tab" onclick="showView('settings')">⚙️ הגדרות</button>
+        </div>
+        
+        <div id="children-view" class="view active">
+            <div id="children-list" class="children-list"></div>
+        </div>
+        
+        <div id="track-view" class="view">
+            <div class="card">
+                <div class="form-group">
+                    <label>בחר ילד:</label>
+                    <select id="track-child">
+                        <option value="">-- בחר ילד --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>סוג התנהגות:</label>
+                    <div class="type-selector">
+                        <button class="type-btn positive" onclick="selectType('positive')">✅ חיובית</button>
+                        <button class="type-btn challenging" onclick="selectType('challenging')">⚠️ מאתגרת</button>
+                    </div>
+                </div>
+                
+                <div id="behavior-section" style="display:none">
+                    <div class="form-group">
+                        <label>בחר התנהגות (העבר עכבר לראות הגדרה):</label>
+                        <div id="behaviors" class="behavior-grid"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>הערות:</label>
+                        <textarea id="notes" placeholder="הוסף הערות..."></textarea>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="saveBehavior()">💾 שמור</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="history-view" class="view">
+            <div class="card">
+                <div class="form-group">
+                    <label>סנן לפי ילד:</label>
+                    <select id="filter-child" onchange="loadHistory()">
+                        <option value="">כל הילדים</option>
+                    </select>
+                </div>
+                <div id="history-list"></div>
+            </div>
+        </div>
+        
+        <div id="add-view" class="view">
+            <div class="card">
+                <h2>הוסף ילד חדש</h2>
+                <div class="form-group">
+                    <label>שם:</label>
+                    <input type="text" id="child-name" placeholder="שם הילד">
+                </div>
+                <div class="form-group">
+                    <label>גיל:</label>
+                    <input type="number" id="child-age" placeholder="גיל" min="0" max="10">
+                </div>
+                <button class="btn btn-success" onclick="addChild()">➕ הוסף ילד</button>
+            </div>
+        </div>
+        
+        <div id="settings-view" class="view">
+            <div class="card">
+                <h2>הגדרות התנהגויות</h2>
+                
+                <h3>התנהגויות חיוביות</h3>
+                <div class="add-behavior-section">
+                    <div class="form-group">
+                        <label>שם ההתנהגות:</label>
+                        <input type="text" id="new-positive-name" placeholder="למשל: שיתוף פעולה">
+                    </div>
+                    <div class="form-group">
+                        <label>הגדרה/תיאור (אופציונלי):</label>
+                        <textarea id="new-positive-desc" placeholder="תאר את ההתנהגות - למשל: הילד משתף פעולה עם חברים, עוזר בפעילויות קבוצתיות, מוכן לשתף צעצועים"></textarea>
+                    </div>
+                    <button class="btn btn-success" onclick="addBehavior('positive')">➕ הוסף התנהגות חיובית</button>
+                </div>
+                <div id="positive-behaviors-list"></div>
+                
+                <h3>התנהגויות מאתגרות</h3>
+                <div class="add-behavior-section challenging-section">
+                    <div class="form-group">
+                        <label>שם ההתנהגות:</label>
+                        <input type="text" id="new-challenging-name" placeholder="למשל: אלימות פיזית">
+                    </div>
+                    <div class="form-group">
+                        <label>הגדרה/תיאור (אופציונלי):</label>
+                        <textarea id="new-challenging-desc" placeholder="תאר את ההתנהגות - למשל: דוחף, מכה, נושך, זורק חפצים על ילדים אחרים"></textarea>
+                    </div>
+                    <button class="btn btn-success" onclick="addBehavior('challenging')">➕ הוסף התנהגות מאתגרת</button>
+                </div>
+                <div id="challenging-behaviors-list"></div>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid var(--border);">
+                    <button class="btn btn-danger" onclick="resetToDefaults()">🔄 אפס להגדרות ברירת מחדל</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const defaultBehaviors = {
+            positive: [
+                { name: 'שיתוף פעולה', description: 'משתף פעולה עם חברים, עוזר בפעילויות קבוצתיות, מוכן לשתף צעצועים' },
+                { name: 'עזרה לחברים', description: 'מסייע לילדים אחרים, מגיש עזרה מיוזמתו' },
+                { name: 'הקשבה', description: 'מקשיב להוראות, שומע לגננת, ממלא אחר הנחיות' },
+                { name: 'יוזמה', description: 'מציג רעיונות, מתחיל פעילויות, מוביל משחקים' },
+                { name: 'יצירתיות', description: 'יוצר, מציע רעיונות חדשים, חושב בצורה מקורית' },
+                { name: 'סבלנות', description: 'ממתין בתור, לא ממהר להפריע, סובלני למצבי המתנה' }
+            ],
+            challenging: [
+                { name: 'אלימות פיזית', description: 'דוחף, מכה, נושך, זורק חפצים על ילדים אחרים, משתמש בכוח פיזי' },
+                { name: 'בידור לא נאות', description: 'משתמש במילים גסות, קורא שמות, מדבר בצורה לא מכבדת' },
+                { name: 'חוסר היענות', description: 'מסרב להקשיב להוראות, לא ממלא הנחיות, מתעלם מבקשות' },
+                { name: 'בכי', description: 'בוכה בצורה תכופה או ממושכת, קשה להרגיע' },
+                { name: 'התקפי זעם', description: 'מתפרץ בכעס, צועק, זורק חפצים, מאבד שליטה' }
+            ]
+        };
+
+        let behaviors = JSON.parse(localStorage.getItem('behaviors')) || JSON.parse(JSON.stringify(defaultBehaviors));
+        let children = JSON.parse(localStorage.getItem('children') || '[]');
+        let records = JSON.parse(localStorage.getItem('records') || '[]');
+        let selectedType = null;
+        let selectedBehavior = null;
+
+        function saveBehaviors() {
+            localStorage.setItem('behaviors', JSON.stringify(behaviors));
+        }
+
+        function showView(view) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(view + '-view').classList.add('active');
+            event.target.classList.add('active');
+            
+            if (view === 'children') loadChildren();
+            if (view === 'track') loadTrackSelects();
+            if (view === 'history') loadHistory();
+            if (view === 'settings') loadSettings();
+        }
+
+        function loadSettings() {
+            const positiveList = document.getElementById('positive-behaviors-list');
+            const challengingList = document.getElementById('challenging-behaviors-list');
+            
+            positiveList.innerHTML = behaviors.positive.map((b, i) => `
+                <div class="behavior-list-item positive">
+                    <div class="behavior-header">
+                        <span class="behavior-name">${b.name}</span>
+                        <button class="btn btn-danger btn-small" onclick="removeBehavior('positive', ${i})">🗑️ מחק</button>
+                    </div>
+                    ${b.description ? `<div class="behavior-description">${b.description}</div>` : ''}
+                </div>
+            `).join('');
+            
+            challengingList.innerHTML = behaviors.challenging.map((b, i) => `
+                <div class="behavior-list-item challenging">
+                    <div class="behavior-header">
+                        <span class="behavior-name">${b.name}</span>
+                        <button class="btn btn-danger btn-small" onclick="removeBehavior('challenging', ${i})">🗑️ מחק</button>
+                    </div>
+                    ${b.description ? `<div class="behavior-description">${b.description}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function addBehavior(type) {
+            const nameId = type === 'positive' ? 'new-positive-name' : 'new-challenging-name';
+            const descId = type === 'positive' ? 'new-positive-desc' : 'new-challenging-desc';
+            
+            const name = document.getElementById(nameId).value.trim();
+            const description = document.getElementById(descId).value.trim();
+            
+            if (!name) {
+                alert('יש להזין שם התנהגות');
+                return;
+            }
+            
+            if (behaviors[type].some(b => b.name === name)) {
+                alert('ההתנהגות כבר קיימת');
+                return;
+            }
+            
+            behaviors[type].push({ name, description });
+            saveBehaviors();
+            
+            document.getElementById(nameId).value = '';
+            document.getElementById(descId).value = '';
+            loadSettings();
+        }
+
+        function removeBehavior(type, index) {
+            if (confirm('האם למחוק את ההתנהגות?')) {
+                behaviors[type].splice(index, 1);
+                saveBehaviors();
+                loadSettings();
+            }
+        }
+
+        function resetToDefaults() {
+            if (confirm('האם לאפס את כל ההתנהגויות להגדרות ברירת מחדל?')) {
+                behaviors = JSON.parse(JSON.stringify(defaultBehaviors));
+                saveBehaviors();
+                loadSettings();
+                alert('ההתנהגויות אופסו בהצלחה!');
+            }
+        }
+
+        function loadChildren() {
+            const list = document.getElementById('children-list');
+            if (children.length === 0) {
+                list.innerHTML = '<div class="card" style="text-align:center;padding:60px"><h2>אין ילדים במערכת</h2><p>לחץ על "הוספה" להוסיף ילד ראשון</p></div>';
+                return;
+            }
+            
+            list.innerHTML = children.map(child => {
+                const childRecords = records.filter(r => r.childId === child.id);
+                const positive = childRecords.filter(r => r.type === 'positive').length;
+                const challenging = childRecords.filter(r => r.type === 'challenging').length;
+                
+                return `
+                    <div class="child-card">
+                        <div class="child-name">${child.name}</div>
+                        <div class="child-age">גיל ${child.age}</div>
+                        <div class="stats">
+                            <div class="stat positive">
+                                <div class="stat-value">${positive}</div>
+                                <div>חיוביות</div>
+                            </div>
+                            <div class="stat challenging">
+                                <div class="stat-value">${challenging}</div>
+                                <div>מאתגרות</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadTrackSelects() {
+            const select = document.getElementById('track-child');
+            select.innerHTML = '<option value="">-- בחר ילד --</option>' + 
+                children.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        }
+
+        function selectType(type) {
+            selectedType = type;
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            const section = document.getElementById('behavior-section');
+            const behaviorDiv = document.getElementById('behaviors');
+            section.style.display = 'block';
+            
+            behaviorDiv.innerHTML = behaviors[type].map(b => {
+                const tooltip = b.description ? `<div class="behavior-tooltip">${b.description}</div>` : '';
+                return `<button class="behavior-btn ${type}" onclick="selectBehavior('${b.name}')">${b.name}${tooltip}</button>`;
+            }).join('');
+            selectedBehavior = null;
+        }
+
+        function selectBehavior(behavior) {
+            selectedBehavior = behavior;
+            document.querySelectorAll('.behavior-btn').forEach(b => b.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        function saveBehavior() {
+            const childId = document.getElementById('track-child').value;
+            const notes = document.getElementById('notes').value;
+            
+            if (!childId || !selectedType || !selectedBehavior) {
+                alert('יש למלא את כל השדות');
+                return;
+            }
+            
+            records.push({
+                id: Date.now(),
+                childId: parseInt(childId),
+                type: selectedType,
+                behavior: selectedBehavior,
+                notes: notes,
+                date: new Date().toISOString()
+            });
+            
+            localStorage.setItem('records', JSON.stringify(records));
+            alert('התיעוד נשמר בהצלחה!');
+            
+            document.getElementById('track-child').value = '';
+            document.getElementById('notes').value = '';
+            document.getElementById('behavior-section').style.display = 'none';
+            selectedType = null;
+            selectedBehavior = null;
+            document.querySelectorAll('.type-btn, .behavior-btn').forEach(b => b.classList.remove('selected'));
+        }
+
+        function loadHistory() {
+            const filterChild = document.getElementById('filter-child');
+            filterChild.innerHTML = '<option value="">כל הילדים</option>' + 
+                children.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            
+            const childId = filterChild.value ? parseInt(filterChild.value) : null;
+            const filtered = childId ? records.filter(r => r.childId === childId) : records;
+            const sorted = filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            const list = document.getElementById('history-list');
+            if (sorted.length === 0) {
+                list.innerHTML = '<div style="text-align:center;padding:40px;color:#999">אין תיעודים</div>';
+                return;
+            }
+            
+            list.innerHTML = sorted.map(r => {
+                const child = children.find(c => c.id === r.childId);
+                const date = new Date(r.date);
+                return `
+                    <div class="history-item ${r.type}">
+                        <div class="history-header">
+                            <div class="history-behavior">${r.behavior}</div>
+                            <div>${date.toLocaleDateString('he-IL')} ${date.toLocaleTimeString('he-IL', {hour: '2-digit', minute: '2-digit'})}</div>
+                        </div>
+                        <div><strong>${child ? child.name : 'לא ידוע'}</strong> • ${r.type === 'positive' ? 'חיובית' : 'מאתגרת'}</div>
+                        ${r.notes ? `<div style="margin-top:10px;padding:10px;background:#f5f5f5;border-radius:8px">${r.notes}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addChild() {
+            const name = document.getElementById('child-name').value;
+            const age = document.getElementById('child-age').value;
+            
+            if (!name || !age) {
+                alert('יש למלא שם וגיל');
+                return;
+            }
+            
+            children.push({
+                id: Date.now(),
+                name: name,
+                age: parseInt(age)
+            });
+            
+            localStorage.setItem('children', JSON.stringify(children));
+            alert('הילד נוסף בהצלחה!');
+            
+            document.getElementById('child-name').value = '';
+            document.getElementById('child-age').value = '';
+            showView('children');
+        }
+
+        loadChildren();
+    </script>
+</body>
+</html>
